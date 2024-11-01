@@ -1,20 +1,19 @@
 import itertools
-from itertools import combinations
+import more_itertools
+import time
 
-a = int(input())
-b = int(input())
-c = int(input())
-d = int(input())
-n = int(input())
+a,b,c,d,n = map(int,input().split())
 
+start = time.time()
 exhibition = a*'A' + b*'B' + c*'C' + d*'D'
-
-
-count = 0
-
-combinations = sorted(set(list(itertools.permutations(exhibition, len(exhibition)))))
-for i in combinations:
-    if count == n-1:
-        print(i)
+nth = 0
+pwd = ''
+for c in more_itertools.distinct_permutations(exhibition, len(exhibition)):
+    if nth == n-1:
+        pwd = ''.join(c)
+        cont = False
         break
-    count += 1
+    nth = nth + 1
+end = time.time()
+print(f'password is: {pwd}')
+print('Time taken: ', end - start)
