@@ -4,37 +4,33 @@ start_pos, sequence_length, steps = map(int, input().split())
 sequence = input().split()
 sequence = [int(i) for i in sequence]
 
-grid = np.zeros((10, 10), dtype=int)
+grid = np.zeros((11, 11), dtype=int)
+
 def migrate():
-    migrates = np.all(grid <= 3)
-    while not migrates:
-        for y_coordinate in range(5):
-            for x_coordinate in range(5):
-                if grid[y_coordinate][x_coordinate] > 3:
-                    grid[y_coordinate][x_coordinate] = 0
-                    grid[y_coordinate + 1][x_coordinate] += 1
-                    grid[y_coordinate][x_coordinate + 1] += 1
-                    if y_coordinate >= 1:
-                        grid[y_coordinate - 1][x_coordinate] += 1
-                    if x >= 1:
-                        grid[y_coordinate][x_coordinate - 1] += 1
-        migrates = np.all(grid <= 3)
-
-positions = [start_pos]
-
+    global grid
+    migrate = np.any(grid >= 4)
+    while migrate:
+        positions = np.where(grid >= 4)
+        positions_list = list(zip(positions[0], positions[1]))
+        for position in positions_list:
+            grid[position[0], position[1]] -= 4
+            grid[position[0], position[1] + 1] += 1
+            grid[position[0] + 1, position[1]] += 1
+            grid[position[0], position[1] - 1] += 1
+            grid[position[0] - 1, position[1]] += 1
+        migrate = np.any(grid >= 4)
 
 for i in range(steps):
-    pos = positions[i]
-    next_pos = sequence[i%len(sequence)] + pos
-    if next_pos > 25:
-        next_pos = next_pos -25
-    positions.append(next_pos)
-    x = pos//5
-    y = pos%5 - 1
-    if y == 0:
-        x = x-1
-    grid[y][x] += 1
+    if i == 0:
+        pos = start_pos
+    y = (pos-1)//5
+    x = (pos-1)%5
+    grid[y+3][x+3] += 1
     migrate()
 
-migrate()
-print(grid)
+    pos = sequence[i%len(sequence)] + pos
+    if pos > 25:
+        pos = pos%25
+
+# migrate()
+print(grid[3:8, 3:8])
